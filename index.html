@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Downloader</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+        #message {
+            margin-top: 20px;
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Video Downloader</h1>
+        <form id="downloadForm">
+            <label for="url">Video URL:</label><br>
+            <input type="text" id="url" name="url" required><br>
+            <input type="submit" value="Download MP4">
+        </form>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        document.getElementById('downloadForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const url = document.getElementById('url').value;
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = 'Processing...';
+
+            // Replace with your chosen API endpoint
+            const apiUrl = 'https://youtube-download-api.matheusishiyama.repl.co/mp4/?url=' + encodeURIComponent(url);
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (response.ok) {
+                        return response.blob(); // Get the video as a blob
+                    } else {
+                        throw new Error('Download failed');
+                    }
+                })
+                .then(blob => {
+                    const downloadUrl = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = 'downloaded_video.mp4'; // Set default filename
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    messageDiv.textContent = 'Download completed!';
+                })
+                .catch(error => {
+                    messageDiv.textContent = error.message;
+                });
+        });
+    </script>
+</body>
+</html>
